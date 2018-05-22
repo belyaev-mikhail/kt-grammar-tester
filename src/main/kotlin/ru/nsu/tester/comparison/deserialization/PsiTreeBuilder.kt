@@ -1,5 +1,8 @@
 package ru.nsu.tester.comparison.deserialization
 
+import com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.psiUtil.children
+
 object PsiTreeBuilder {
     private const val INDENT = "  "
 
@@ -10,6 +13,10 @@ object PsiTreeBuilder {
                 val type = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: ""
                 val token = Regex("\\('(.+?)'\\)").find(this)?.groupValues?.get(1) ?: ""
                 PsiToken(type, token)
+            }
+            this.contains("Element") -> {
+                val rule = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: ""
+                PsiRule(rule)
             }
             else -> PsiRule(this.replace(Regex("[\\s+0-9,()]"), ""))
         }
@@ -31,6 +38,16 @@ object PsiTreeBuilder {
             prevIndent = currIndent
         }
 
+        return root
+    }
+
+    fun build(psi: ASTNode) : PsiRule {
+        val root = psi.toString().parseLine()
+        psi.children().forEach {
+            if (it.elementType.toString() != "WHITE_SPACE") {
+                root.addChild(build(it))
+            }
+        }
         return root
     }
 }

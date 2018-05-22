@@ -1,11 +1,16 @@
 package ru.nsu.tester.comparison
 
+import org.jetbrains.kootstrap.FooBarCompiler
+import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.addKotlinSourceRoot
+import org.jetbrains.kotlin.psi.KtPsiFactory
 import ru.nsu.gen.KotlinParser.KotlinFileContext
 import ru.nsu.tester.comparison.deserialization.PsiTreeBuilder
 import ru.nsu.tester.comparison.wrapper.AntlrTreeWrapper
 import ru.nsu.tester.comparison.wrapper.PsiTreeWrapper
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
-import java.io.File
 
 data class ComparisonError(val antlrRule: String?, val psiRule: String?) {
     override fun toString(): String {
@@ -26,9 +31,14 @@ data class ComparisonResult(val errors: List<ComparisonError>?) {
 
 object Comparator {
     fun inspectTree(path: String, antlrTree: KotlinFileContext): ComparisonResult {
-        val psi = File(path.replace(".kt", ".txt"))
-        if (!psi.exists()) return ComparisonResult(null)
-        val psiTree = PsiTreeBuilder.build(psi.readLines())
+        val cfg = CompilerConfiguration()
+        cfg.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+        cfg.addKotlinSourceRoot(path)
+
+        val ktFile = FooBarCompiler.setupMyEnv(cfg).getSourceFiles().first()
+        val parsed = KtPsiFactory(ktFile).createFile(ktFile.virtualFile.path, ktFile.text)
+
+        val psiTree = PsiTreeBuilder.build(parsed.treeElement!!)
         val errors = mutableListOf<ComparisonError>()
         compareTrees(AntlrTreeWrapper(antlrTree), PsiTreeWrapper(psiTree), errors)
 
