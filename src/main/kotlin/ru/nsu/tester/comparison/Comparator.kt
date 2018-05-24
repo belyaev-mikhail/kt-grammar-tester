@@ -12,7 +12,12 @@ import ru.nsu.tester.comparison.wrapper.AntlrTreeWrapper
 import ru.nsu.tester.comparison.wrapper.PsiTreeWrapper
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
 
-data class ComparisonError(val antlrRule: String?, val psiRule: String?) {
+data class ComparisonError(
+        val antlrRule: String?,
+        val psiRule: String?,
+        val antlrTree: TreeWrapper,
+        val psiTree: TreeWrapper) {
+
     override fun toString(): String {
         return "Difference found in ANTLR: $antlrRule / PSI: $psiRule"
     }
@@ -59,7 +64,7 @@ object Comparator {
                 psiNextToCheck = psiNode.nextValuableChild(psiNextToCheck.getIndex() + 1);
             }
         } catch (ex: Exception) {
-            errors.add(ComparisonError(antlrNode.getName(), psiNode.getName()))
+            errors.add(ComparisonError(antlrNode.getName(), psiNode.getName(), antlrNode, psiNode))
         }
     }
 }

@@ -10,12 +10,12 @@ object PsiTreeBuilder {
         return when {
             this.contains("empty list") -> PsiToken("", this.replace(Regex("[\\s+<>]"), ""))
             this.contains("PsiElement") -> {
-                val type = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: ""
-                val token = Regex("\\('(.+?)'\\)").find(this)?.groupValues?.get(1) ?: ""
+                val type = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: " "
+                val token = Regex("\\('(.+?)'\\)").find(this)?.groupValues?.get(1) ?: " "
                 PsiToken(type, token)
             }
             this.contains("Element") -> {
-                val rule = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: ""
+                val rule = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: " "
                 PsiRule(rule)
             }
             else -> PsiRule(this.replace(Regex("[\\s+0-9,()]"), ""))
@@ -42,7 +42,7 @@ object PsiTreeBuilder {
     }
 
     fun build(psi: ASTNode) : PsiRule {
-        val root = psi.toString().parseLine()
+        val root = (psi.toString() + "('" + psi.psi.text + "')").parseLine()
         psi.children().forEach {
             if (it.elementType.toString() != "WHITE_SPACE") {
                 root.addChild(build(it))

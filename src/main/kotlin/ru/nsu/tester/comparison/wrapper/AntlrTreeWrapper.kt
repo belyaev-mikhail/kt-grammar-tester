@@ -3,12 +3,18 @@ package ru.nsu.tester.comparison.wrapper
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
-val redundant = listOf("Semis", "TopLevelObject", "Declaration", "SimpleIdentifier", "FunctionBody")
+val redundant = listOf(
+        "Semis",
+        "TopLevelObject",
+        "Declaration",
+        "SimpleIdentifier",
+        "FunctionBody",
+        "Statements")
 
 class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper {
     override fun isRedundant(): Boolean = redundant.contains(getName())
 
-    override fun getName() = tree::class.simpleName?.removeSuffix("Context")
+    override fun getName() = tree::class.simpleName?.removeSuffix("Context") ?: " "
 
     override fun getIndex(): Int {
         val parent = AntlrTreeWrapper(tree.parent)
@@ -20,10 +26,10 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper {
         return index
     }
 
-    override fun getText(): String? {
+    override fun getText(): String {
         return when (tree) {
             is TerminalNode -> tree.symbol.text
-            else -> getName()
+            else -> getName() ?: " "
         }
     }
 
