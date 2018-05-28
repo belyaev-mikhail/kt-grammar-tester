@@ -9,6 +9,9 @@ import java.awt.EventQueue
 fun main(args: Array<String>) {
     val dir = File(if (args.isNotEmpty()) args[0] else ".")
     assert(dir.exists() && dir.isDirectory)
+
+    var correctCount = 0
+    var totalCount = 0
     dir.walkTopDown()
             .filter { it.extension == "kt" }
             .forEach {
@@ -18,12 +21,16 @@ fun main(args: Array<String>) {
                 if (result.isCorrect()) {
                     val compareResult = Comparator.inspectTree(it.path, result.root!!)
                     compareResult.output()
-                    if (!compareResult.isCorrect()) {
-                        EventQueue.invokeLater({
-                            run { AnalysisRenderer(compareResult.errors!!.first()).display() }
-                        })
-                    }
+                    if (compareResult.isCorrect()) correctCount++
+//                    if (!compareResult.isCorrect()) {
+//                        EventQueue.invokeLater({
+//                            run { AnalysisRenderer(compareResult.errors!!.first()).display() }
+//                        })
+//                    }
                 }
+                totalCount++
                 println()
             }
+
+    println("Correct: $correctCount / $totalCount")
 }

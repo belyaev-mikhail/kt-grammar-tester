@@ -3,7 +3,7 @@ package ru.nsu.tester.comparison.wrapper
 import ru.nsu.tester.comparison.deserialization.PsiRule
 import ru.nsu.tester.comparison.deserialization.PsiToken
 
-class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper {
+class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper() {
     override fun isRedundant(): Boolean = false
 
     override fun getName() = tree.name
@@ -23,8 +23,8 @@ class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper {
     override fun valuableChildrenCount(): Int {
         return if (!tree.children.isEmpty())
             tree.children.asSequence()
-                .filter { it -> PsiTreeWrapper(it).isValuable() }
-                .count()
+                    .filter { it -> PsiTreeWrapper(it).isValuable() }
+                    .count()
         else 0
     }
 

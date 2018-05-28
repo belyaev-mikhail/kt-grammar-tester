@@ -15,7 +15,6 @@ private const val GAP_BETWEEN_LEVELS = 50.0
 private const val GAP_BETWEEN_NODES = 20.0
 
 private const val STROKE_SIZE = 1.5
-private const val ARC_SIZE = 10
 private const val OFFSET = 5
 
 class TreePanel(tree: TreeWrapper) : JPanel() {
@@ -72,25 +71,30 @@ class TreePanel(tree: TreeWrapper) : JPanel() {
     }
 
     private fun paintBox(g: Graphics, tree: TreeWrapper) {
+        val box = getBoundsOfNode(tree)
+        var boxWidth = box.width.toInt()
         var text = tree.getName()
         var textColor = Color.BLACK
         if (tree.childrenCount() == 0) {
             text = tree.getText()
             textColor = Color.LIGHT_GRAY
+            if (text.length < 2) {
+                boxWidth *= 3
+            }
         }
 
         g.color = UIManager.getColor ("Panel.background")
-        val box = getBoundsOfNode(tree)
         val metrics = g.getFontMetrics(font)
-        g.fillRoundRect(box.x.toInt() + OFFSET,
+        g.fillRoundRect(
+                box.x.toInt() + OFFSET,
                 box.y.toInt() + OFFSET,
-                box.width.toInt(),
+                boxWidth,
                 box.height.toInt(),
-                ARC_SIZE,
-                ARC_SIZE)
+                0,
+                0)
 
         g.color = textColor
-        val x = box.x.toInt() + ARC_SIZE / 2
+        val x = box.x.toInt()
         val y = box.y.toInt() + metrics.ascent + metrics.leading + 1
         g.drawString(text, x + OFFSET, y + OFFSET)
     }

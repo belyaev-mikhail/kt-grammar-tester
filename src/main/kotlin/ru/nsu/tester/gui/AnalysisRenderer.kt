@@ -10,7 +10,7 @@ private const val MAX_PANEL_HEIGHT = 600
 private const val OFFSET = 10
 private val LABEL_FONT = Font("Tahoma", Font.PLAIN, 16)
 
-class AnalysisRenderer(comparisonError: ComparisonError) : JPanel() {
+class AnalysisRenderer(comparisonError: ComparisonError) {
     private val antlrPanel = TreePanel(comparisonError.antlrTree)
     private val psiPanel = TreePanel(comparisonError.psiTree)
 
@@ -37,6 +37,7 @@ class AnalysisRenderer(comparisonError: ComparisonError) : JPanel() {
         f.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         f.layout = GridBagLayout()
 
+
         var width = max(antlrPanel.treeLayout.bounds.bounds.width, psiPanel.treeLayout.bounds.bounds.width) + OFFSET
         if (width > MAX_PANEL_WIDTH) width = MAX_PANEL_WIDTH
         var height = max(antlrPanel.treeLayout.bounds.bounds.height, psiPanel.treeLayout.bounds.bounds.height) + OFFSET
@@ -54,5 +55,6 @@ class AnalysisRenderer(comparisonError: ComparisonError) : JPanel() {
         f.pack()
         f.setLocationRelativeTo(null)
         f.isVisible = true
+        f.isResizable = false
     }
 }

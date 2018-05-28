@@ -12,6 +12,13 @@ import ru.nsu.tester.comparison.wrapper.AntlrTreeWrapper
 import ru.nsu.tester.comparison.wrapper.PsiTreeWrapper
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
 
+val considerSimilar = listOf(
+        Pair("PostfixUnaryExpression", "DOT_QUALIFIED_EXPRESSION"),
+        Pair("Identifier", "DOT_QUALIFIED_EXPRESSION"),
+        Pair("MultiLineStringLiteral", "STRING_TEMPLATE"),
+        Pair("LineStringLiteral", "STRING_TEMPLATE"),
+        Pair("UserType", "USER_TYPE"))
+
 data class ComparisonError(
         val antlrRule: String?,
         val psiRule: String?,
@@ -52,6 +59,7 @@ object Comparator {
 
     private fun compareTrees(antlrNode: TreeWrapper, psiNode: TreeWrapper, errors: MutableList<ComparisonError>) {
         try {
+            if (considerSimilar.contains(Pair(antlrNode.getName(), psiNode.getName()))) return
             if (antlrNode.valuableChildrenCount() != psiNode.valuableChildrenCount()) throw Exception()
             var antlrNextToCheck = antlrNode.nextValuableChild(0)
             var psiNextToCheck = psiNode.nextValuableChild(0)

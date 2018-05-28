@@ -8,16 +8,16 @@ object PsiTreeBuilder {
 
     private fun String.parseLine() : PsiRule {
         return when {
-            this.contains("empty list") -> PsiToken("", this.replace(Regex("[\\s+<>]"), ""))
-            this.contains("PsiElement") -> {
+            this.startsWith("PsiElement") -> {
                 val type = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: " "
                 val token = Regex("\\('(.+?)'\\)").find(this)?.groupValues?.get(1) ?: " "
                 PsiToken(type, token)
             }
-            this.contains("Element") -> {
+            this.startsWith("Element") -> {
                 val rule = Regex("\\((.+?)\\)").find(this)?.groupValues?.get(1) ?: " "
                 PsiRule(rule)
             }
+            this.contains("empty list") -> PsiToken("", this.replace(Regex("[\\s+<>]"), ""))
             else -> PsiRule(this.replace(Regex("[\\s+0-9,()]"), ""))
         }
     }
@@ -44,7 +44,10 @@ object PsiTreeBuilder {
     fun build(psi: ASTNode) : PsiRule {
         val root = (psi.toString() + "('" + psi.psi.text + "')").parseLine()
         psi.children().forEach {
-            if (it.elementType.toString() != "WHITE_SPACE") {
+            if (it.elementType.toString() != "WHITE_SPACE"
+                    && it.elementType.toString() != "EOL_COMMENT"
+                    && it.elementType.toString() != "BLOCK_COMMENT"
+                    && it.elementType.toString() != "KDoc") {
                 root.addChild(build(it))
             }
         }

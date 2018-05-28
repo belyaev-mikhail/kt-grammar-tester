@@ -1,24 +1,29 @@
 package ru.nsu.tester.comparison.wrapper
 
-internal val unvaluable: List<String> = listOf("\n", "\r\n", ";", "<EOF>", "emptylist")
+internal val unvaluable: List<String> = listOf(
+        "<EOF>",
+        "emptylist",
+        "\n", "\r\n",
+        "Semis", "Semi", ";")
 
-// TODO: use properties access syntax
-interface TreeWrapper {
+abstract class TreeWrapper {
+    override fun toString() : String = getName()
+
     fun isValuable(): Boolean = !unvaluable.contains(getText())
 
-    fun isRedundant(): Boolean
+    abstract fun isRedundant(): Boolean
 
-    fun getName(): String
+    abstract fun getName(): String
 
-    fun getIndex(): Int
+    abstract fun getIndex(): Int
 
-    fun getText(): String
+    abstract fun getText(): String
 
-    fun getChild(i: Int): TreeWrapper
+    abstract fun getChild(i: Int): TreeWrapper
 
-    fun childrenCount(): Int
+    abstract fun childrenCount(): Int
 
-    fun valuableChildrenCount(): Int
+    abstract fun valuableChildrenCount(): Int
 
-    fun nextValuableChild(startChildNumber: Int): TreeWrapper?
+    abstract fun nextValuableChild(startChildNumber: Int): TreeWrapper?
 }
