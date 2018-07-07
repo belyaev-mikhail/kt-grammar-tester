@@ -10,7 +10,7 @@ private const val CHAR_HEIGHT = 23.0
 class MyNodeExtentProvider: NodeExtentProvider<TreeWrapper> {
     override fun getWidth(p0: TreeWrapper?): Double {
         if (p0 == null) return 0.0
-        val text: String = if (p0.childrenCount() == 0) p0.getText() else p0.getName()
+        val text: String = if (p0.childrenCount == 0) p0.text else p0.name
 
         return if (Character.isUpperCase(text[text.lastIndex]))
             text.length.times(UPPER_CHAR_WIDTH)

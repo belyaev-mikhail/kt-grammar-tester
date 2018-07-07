@@ -7,23 +7,14 @@ internal val unvaluable: List<String> = listOf(
         "Semis", "Semi", ";")
 
 abstract class TreeWrapper {
-    override fun toString() : String = getName()
-
-    fun isValuable(): Boolean = !unvaluable.contains(getText())
-
-    abstract fun isRedundant(): Boolean
-
-    abstract fun getName(): String
-
-    abstract fun getIndex(): Int
-
-    abstract fun getText(): String
+    abstract val name: String
+    abstract val text: String
+    abstract val index: Int
+    abstract val childrenCount: Int
+    abstract val valuableChildrenCount: Int
+    abstract val isRedundant: Boolean
+    abstract val isValuable: Boolean
 
     abstract fun getChild(i: Int): TreeWrapper
-
-    abstract fun childrenCount(): Int
-
-    abstract fun valuableChildrenCount(): Int
-
     abstract fun nextValuableChild(startChildNumber: Int): TreeWrapper?
 }

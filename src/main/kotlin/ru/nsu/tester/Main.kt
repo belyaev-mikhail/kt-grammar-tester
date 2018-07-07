@@ -22,11 +22,14 @@ fun main(args: Array<String>) {
                     val compareResult = Comparator.inspectTree(it.path, result.root!!)
                     compareResult.output()
                     if (compareResult.isCorrect()) correctCount++
-//                    if (!compareResult.isCorrect()) {
-//                        EventQueue.invokeLater({
-//                            run { AnalysisRenderer(compareResult.errors!!.first()).display() }
-//                        })
-//                    }
+                    /* Uncomment to view erroneous subtree */
+                    /*
+                    else {
+                        EventQueue.invokeLater({
+                            run { AnalysisRenderer(compareResult.errors!!.first()).display() }
+                        })
+                    }
+                    */
                 }
                 totalCount++
                 println()

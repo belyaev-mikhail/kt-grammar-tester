@@ -33,9 +33,9 @@ class TreePanel(tree: TreeWrapper) : JPanel() {
     }
 
     private fun fillTreeForTreeLayout(treeForTreeLayout: DefaultTreeForTreeLayout<TreeWrapper>, tree: TreeWrapper) {
-        for (i in 0 until tree.childrenCount()) {
+        for (i in 0 until tree.childrenCount) {
             val child = tree.getChild(i)
-            if (!child.isValuable()) continue
+            if (!child.isValuable) continue
             treeForTreeLayout.addChild(tree, child)
             fillTreeForTreeLayout(treeForTreeLayout, child)
         }
@@ -73,10 +73,10 @@ class TreePanel(tree: TreeWrapper) : JPanel() {
     private fun paintBox(g: Graphics, tree: TreeWrapper) {
         val box = getBoundsOfNode(tree)
         var boxWidth = box.width.toInt()
-        var text = tree.getName()
+        var text = tree.name
         var textColor = Color.BLACK
-        if (tree.childrenCount() == 0) {
-            text = tree.getText()
+        if (tree.childrenCount == 0) {
+            text = tree.text
             textColor = Color.LIGHT_GRAY
             if (text.length < 2) {
                 boxWidth *= 3

@@ -7,7 +7,7 @@ import kotlin.math.max
 
 private const val MAX_PANEL_WIDTH = 500
 private const val MAX_PANEL_HEIGHT = 600
-private const val OFFSET = 10
+private const val OFFSET = 20
 private val LABEL_FONT = Font("Tahoma", Font.PLAIN, 16)
 
 class AnalysisRenderer(comparisonError: ComparisonError) {

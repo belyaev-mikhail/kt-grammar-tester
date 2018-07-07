@@ -8,9 +8,7 @@ import org.jetbrains.kotlin.config.addKotlinSourceRoot
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import ru.nsu.gen.KotlinParser.KotlinFileContext
 import ru.nsu.tester.comparison.deserialization.PsiTreeBuilder
-import ru.nsu.tester.comparison.wrapper.AntlrTreeWrapper
-import ru.nsu.tester.comparison.wrapper.PsiTreeWrapper
-import ru.nsu.tester.comparison.wrapper.TreeWrapper
+import ru.nsu.tester.comparison.wrapper.*
 
 val considerSimilar = listOf(
         Pair("PostfixUnaryExpression", "DOT_QUALIFIED_EXPRESSION"),
@@ -50,6 +48,9 @@ object Comparator {
         val ktFile = FooBarCompiler.setupMyEnv(cfg).getSourceFiles().first()
         val parsed = KtPsiFactory(ktFile).createFile(ktFile.virtualFile.path, ktFile.text)
 
+        println("is valid: ${parsed.treeElement!!.textRange}")
+
+        // TODO: assert psi doesn't have errors
         val psiTree = PsiTreeBuilder.build(parsed.treeElement!!)
         val errors = mutableListOf<ComparisonError>()
         compareTrees(AntlrTreeWrapper(antlrTree), PsiTreeWrapper(psiTree), errors)
@@ -59,8 +60,8 @@ object Comparator {
 
     private fun compareTrees(antlrNode: TreeWrapper, psiNode: TreeWrapper, errors: MutableList<ComparisonError>) {
         try {
-            if (considerSimilar.contains(Pair(antlrNode.getName(), psiNode.getName()))) return
-            if (antlrNode.valuableChildrenCount() != psiNode.valuableChildrenCount()) throw Exception()
+            if (considerSimilar.contains(Pair(antlrNode.name, psiNode.name))) return
+            if (antlrNode.valuableChildrenCount != psiNode.valuableChildrenCount) throw Exception()
             var antlrNextToCheck = antlrNode.nextValuableChild(0)
             var psiNextToCheck = psiNode.nextValuableChild(0)
             while (!(antlrNextToCheck == null && psiNextToCheck == null)) {
@@ -68,11 +69,11 @@ object Comparator {
 
                 compareTrees(antlrNextToCheck, psiNextToCheck, errors)
 
-                antlrNextToCheck = antlrNode.nextValuableChild(antlrNextToCheck.getIndex() + 1);
-                psiNextToCheck = psiNode.nextValuableChild(psiNextToCheck.getIndex() + 1);
+                antlrNextToCheck = antlrNode.nextValuableChild(antlrNextToCheck.index + 1);
+                psiNextToCheck = psiNode.nextValuableChild(psiNextToCheck.index + 1);
             }
         } catch (ex: Exception) {
-            errors.add(ComparisonError(antlrNode.getName(), psiNode.getName(), antlrNode, psiNode))
+            errors.add(ComparisonError(antlrNode.name, psiNode.name, antlrNode, psiNode))
         }
     }
 }
