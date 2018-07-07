@@ -13,7 +13,7 @@ Kotlin language source code | Parsing and comparison report with ability to chec
 
 
 ### Comparison logic
-- There are several ANTLR rules which can be considered as _redundant_. Redundant rules are created just to simplify the grammar and are skipped when verified
+- There are several ANTLR rules which can be considered as _redundant_. Redundant rules are created just to simplify the grammar and skipped when verified
 - Our goal is to check if the trees are homeomorphic by smoothing out vertices from the ANLTR-generated parse tree
 
 ### Grammar source
