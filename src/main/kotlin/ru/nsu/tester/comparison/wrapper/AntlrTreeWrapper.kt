@@ -16,8 +16,9 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
     override val text =
             when (tree) {
                 is TerminalNode -> tree.symbol.text
-                else -> name ?: " "
+                else -> name
             }
+    override val textRange = tree.text.replace("\r", "").replace("<EOF>", "")
     override val index: Int
         get() {
             val parent = AntlrTreeWrapper(tree.parent)

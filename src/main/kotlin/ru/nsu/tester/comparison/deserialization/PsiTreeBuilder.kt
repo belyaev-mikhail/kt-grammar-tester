@@ -11,9 +11,10 @@ val skipped = listOf(
 
 object PsiTreeBuilder {
     fun build(node: ASTNode) : PsiRule {
-        val root = if (node.toString().startsWith("PsiElement") || node.toString().contains("empty list"))
-            PsiToken(node.elementType.toString(), node.text, node.textRange) else
-            PsiRule(node.elementType.toString(), node.textRange)
+        val root =
+                if (node.toString().startsWith("PsiElement") || node.toString().contains("empty list"))
+                    PsiToken(node.elementType.toString(), node.text, node.text)
+                else PsiRule(node.elementType.toString(), node.text)
         node.children().forEach {
             if (!skipped.contains(it.elementType.toString())) {
                 root.addChild(build(it))

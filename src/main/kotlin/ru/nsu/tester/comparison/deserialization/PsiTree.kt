@@ -1,8 +1,6 @@
 package ru.nsu.tester.comparison.deserialization
 
-import com.intellij.openapi.util.TextRange
-
-open class PsiRule(val name: String, textRange: TextRange) {
+open class PsiRule(val name: String, textRange: String) {
     lateinit var parent: PsiRule
     var children = mutableListOf<PsiRule>()
     val textRange = textRange
@@ -15,4 +13,4 @@ open class PsiRule(val name: String, textRange: TextRange) {
     }
 }
 
-class PsiToken(val type: String, val text: String, textRange: TextRange) : PsiRule("PsiToken", textRange)
+class PsiToken(val type: String, val text: String, textRange: String) : PsiRule("PsiToken", textRange)
