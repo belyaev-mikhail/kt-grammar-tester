@@ -9,7 +9,10 @@ val redundant = listOf(
         "ClassMemberDeclarations",
         "FunctionBody",
         "Parameter",
-        "EnumEntries")
+        "EnumEntries",
+        "NavigationSuffix",
+        "AssignableSuffix",
+        "PostfixUnarySuffix")
 
 class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
     override val name = tree::class.simpleName?.removeSuffix("Context") ?: " "
@@ -18,7 +21,10 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
                 is TerminalNode -> tree.symbol.text
                 else -> name
             }
-    override val textRange = tree.text.replace("\r", "").replace("<EOF>", "")
+    override val textRange = tree.text
+            .replace(Regex("(//.*?((\r?\n)|$))|((?s)/\\*.*?\\*/)"), "")
+            .replace(Regex("[\r\n ]"), "")
+            .replace("<EOF>", "")
     override val index: Int
         get() {
             val parent = AntlrTreeWrapper(tree.parent)

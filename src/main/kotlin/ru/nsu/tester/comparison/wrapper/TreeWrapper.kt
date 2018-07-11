@@ -2,6 +2,7 @@ package ru.nsu.tester.comparison.wrapper
 
 internal val unvaluable: List<String> = listOf(
         "<EOF>",
+        "emptylist",
         "\n", "\r\n",
         "Semis", "Semi", ";")
 

@@ -6,7 +6,9 @@ import ru.nsu.tester.comparison.deserialization.PsiToken
 class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper() {
     override val name = tree.name
     override val text = (tree as? PsiToken)?.text ?: tree.name
-    override val textRange = tree.textRange.replace(" ", "")
+    override val textRange = tree.textRange
+            .replace(Regex("(//.*?((\r?\n)|$))|((?s)/\\*.*?\\*/)"), "")
+            .replace(Regex("[\r\n\t ]"), "")
     override val index: Int
         get() {
             val parent = PsiTreeWrapper(tree.parent)
