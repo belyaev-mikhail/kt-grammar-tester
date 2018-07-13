@@ -16,6 +16,6 @@ abstract class TreeWrapper {
     abstract val isRedundant: Boolean
     abstract val isValuable: Boolean
 
-    abstract fun getChild(i: Int): TreeWrapper
-    abstract fun nextValuableChild(startChildNumber: Int): TreeWrapper?
+    abstract fun getChild(i: Int) : TreeWrapper
+    abstract fun nextValuableChild(startChildNumber: Int) : TreeWrapper?
 }

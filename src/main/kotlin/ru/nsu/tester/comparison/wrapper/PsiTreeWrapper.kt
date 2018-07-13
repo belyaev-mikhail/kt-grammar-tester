@@ -11,17 +11,15 @@ class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper() {
             .replace(Regex("[\r\n\t ]"), "")
     override val index: Int
         get() {
-            val parent = PsiTreeWrapper(tree.parent)
-            if (parent.valuableChildrenCount == 1) return parent.index
+            if (tree.parent == null) return 0
+            val parent = PsiTreeWrapper(tree.parent!!)
+            if (parent.valuableChildrenCount == 1 && parent.tree.parent != null) return parent.index
             return parent.tree.children.indexOf(this.tree)
         }
     override val childrenCount = tree.children.size
-    override val valuableChildrenCount =
-            if (!tree.children.isEmpty())
-                tree.children.asSequence()
-                        .filter { it -> PsiTreeWrapper(it).isValuable }
-                        .count()
-            else 0
+    override val valuableChildrenCount = tree.children
+                    .map { PsiTreeWrapper(it) }
+                    .count { it.isValuable && !(it.name != "PsiToken" && it.childrenCount == 0) }
     override val isRedundant = false
     override val isValuable = !unvaluable.contains(text)
 
@@ -32,7 +30,7 @@ class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper() {
         val valuable = PsiTreeWrapper(start)
         if (valuable.isRedundant || valuable.valuableChildrenCount == 1)
             return valuable.nextValuableChild(0) ?: nextValuableChild(valuable.index + 1)
-        if (start !is PsiToken && valuable.isValuable) return valuable
+        if (start !is PsiToken && valuable.isValuable && valuable.childrenCount > 0) return valuable
 
         return nextValuableChild(valuable.index + 1)
     }

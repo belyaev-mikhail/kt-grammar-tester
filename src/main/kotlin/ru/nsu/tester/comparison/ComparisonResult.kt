@@ -3,8 +3,8 @@ package ru.nsu.tester.comparison
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
 import java.io.File
 
-val LOCAL_PROJECT_PREFIX = "C:/Users/Anastasia/Documents/kotoed"
-val WEB_PROJECT_PREFIX = "https://bitbucket.org/vorpal-research/kotoed/src/f50fa0290fb1f33a303873ac62f9b94c513abde9"
+val LOCAL_PROJECT_PREFIX = "/home/shadrina/tests/KotlinFuzzer/fuzzer/src/test/resources"
+val WEB_PROJECT_PREFIX = "https://github.com/ItsLastDay/KotlinFuzzer/tree/master/fuzzer/src/test/resources"
 
 fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
 

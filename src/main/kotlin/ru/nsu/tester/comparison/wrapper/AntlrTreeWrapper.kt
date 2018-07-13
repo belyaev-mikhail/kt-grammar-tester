@@ -10,9 +10,8 @@ val redundant = listOf(
         "FunctionBody",
         "Parameter",
         "EnumEntries",
-        "NavigationSuffix",
-        "AssignableSuffix",
-        "PostfixUnarySuffix")
+        "PostfixUnarySuffix",
+        "NavigationSuffix")
 
 class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
     override val name = tree::class.simpleName?.removeSuffix("Context") ?: " "
@@ -28,7 +27,7 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
     override val index: Int
         get() {
             val parent = AntlrTreeWrapper(tree.parent)
-            if (parent.valuableChildrenCount == 1) {
+            if (parent.valuableChildrenCount == 1 && parent.tree.parent != null) {
                 return parent.index
             }
             var index: Int = -1
@@ -53,6 +52,7 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
             var count = 0
             for (i in 0 until tree.childCount) {
                 val child = AntlrTreeWrapper(tree.getChild(i))
+                if (child.textRange == "") continue
                 if (child.isValuable && !child.isRedundant) count++
                 if (child.isRedundant) count += child.valuableChildrenCount
             }
@@ -81,7 +81,7 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
             return valuable.nextValuableChild(0)
                     ?: nextValuableChild(startChildNumber + valuable.childrenCount)
         }
-        if (start !is TerminalNode && valuable.isValuable)
+        if (start !is TerminalNode && valuable.isValuable && valuable.childrenCount > 0)
             return valuable
 
         return nextValuableChild(startChildNumber + 1)

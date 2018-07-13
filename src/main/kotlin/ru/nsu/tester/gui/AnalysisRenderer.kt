@@ -3,7 +3,6 @@ package ru.nsu.tester.gui
 import ru.nsu.tester.comparison.ComparisonError
 import java.awt.*
 import javax.swing.*
-import kotlin.math.max
 
 private const val MAX_PANEL_WIDTH = 600
 private const val MAX_PANEL_HEIGHT = 600
@@ -37,10 +36,9 @@ class AnalysisRenderer(comparisonError: ComparisonError) {
         f.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         f.layout = GridBagLayout()
 
-
-        var width = max(antlrPanel.treeLayout.bounds.bounds.width, psiPanel.treeLayout.bounds.bounds.width) + OFFSET
+        var width = maxOf(antlrPanel.treeLayout.bounds.bounds.width, psiPanel.treeLayout.bounds.bounds.width) + OFFSET
         if (width > MAX_PANEL_WIDTH) width = MAX_PANEL_WIDTH
-        var height = max(antlrPanel.treeLayout.bounds.bounds.height, psiPanel.treeLayout.bounds.bounds.height) + OFFSET
+        var height = maxOf(antlrPanel.treeLayout.bounds.bounds.height, psiPanel.treeLayout.bounds.bounds.height) + OFFSET
         if (height > MAX_PANEL_HEIGHT) height = MAX_PANEL_HEIGHT
 
         val c = f.contentPane

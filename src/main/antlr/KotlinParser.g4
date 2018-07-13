@@ -257,6 +257,11 @@ userType
     : simpleUserType (NL* '.' NL* simpleUserType)*
     ;
 
+parenthesizedUserType
+    : '(' userType ')'
+    | '(' parenthesizedUserType ')'
+    ;
+
 simpleUserType
     : simpleIdentifier (NL* typeArguments)?
     ;
@@ -304,52 +309,47 @@ assignment
     ;
 
 expression
-    : disjunction | ifExpression
-    ;
-
-ifExpression
-    : 'if' NL* '(' NL* expression NL* ')' NL* controlStructureBody (';'? NL* 'else' NL* controlStructureBody)?
-    | 'if' NL* '(' NL* expression NL* ')' NL* (';' NL*)? 'else' NL* controlStructureBody
+    : disjunction
     ;
 
 disjunction
-    : conjunction (NL* '||' NL* (conjunction | ifExpression))*
+    : conjunction (NL* '||' NL* conjunction)*
     ;
 
 conjunction
-    : equality (NL* '&&' NL* (equality | ifExpression))*
+    : equality (NL* '&&' NL* equality)*
     ;
 
 equality
-    : comparison (/* NO NL! */ equalityOperator NL* (comparison | ifExpression))*
+    : comparison (/* NO NL! */ equalityOperator NL* comparison)*
     ;
 
 comparison
-    : infixOperation (/* NO NL! */ comparisonOperator NL* (infixOperation | ifExpression))?
+    : infixOperation (/* NO NL! */ comparisonOperator NL* infixOperation)?
     ;
 
 infixOperation
-    : elvisExpression (/* NO NL! */ inOperator NL* (elvisExpression | ifExpression) | isOperator NL* type)*
+    : elvisExpression (/* NO NL! */ inOperator NL* elvisExpression | isOperator NL* type)*
     ;
 
 elvisExpression
-    : infixFunctionCall (NL* '?:' NL* (infixFunctionCall | ifExpression))*
+    : infixFunctionCall (NL* '?:' NL* infixFunctionCall)*
     ;
 
 infixFunctionCall
-    : rangeExpression (/* NO NL! */ simpleIdentifier NL* (rangeExpression | ifExpression))*
+    : rangeExpression (/* NO NL! */ simpleIdentifier NL* rangeExpression)*
     ;
 
 rangeExpression
-    : additiveExpression (/* NO NL! */ '..' NL* (additiveExpression | ifExpression))*
+    : additiveExpression (/* NO NL! */ '..' NL* additiveExpression)*
     ;
 
 additiveExpression
-    : multiplicativeExpression (/* NO NL! */ additiveOperator NL* (multiplicativeExpression | ifExpression))*
+    : multiplicativeExpression (/* NO NL! */ additiveOperator NL* multiplicativeExpression)*
     ;
 
 multiplicativeExpression
-    : asExpression (/* NO NL! */ multiplicativeOperator NL* (asExpression | ifExpression))*
+    : asExpression (/* NO NL! */ multiplicativeOperator NL* asExpression)*
     ;
 
 asExpression
@@ -358,7 +358,6 @@ asExpression
 
 prefixUnaryExpression
     : unaryPrefix* postfixUnaryExpression
-    | unaryPrefix+ ifExpression
     ;
 
 unaryPrefix
@@ -444,6 +443,7 @@ primaryExpression
     | collectionLiteral
     | thisExpression
     | superExpression
+    | ifExpression
     | whenExpression
     | tryExpression
     | jumpExpression
@@ -550,6 +550,11 @@ controlStructureBody
     | statement
     ;
 
+ifExpression
+    : 'if' NL* '(' NL* expression NL* ')' NL* controlStructureBody (';'? NL* 'else' NL* controlStructureBody)?
+    | 'if' NL* '(' NL* expression NL* ')' NL* (';' NL*)? 'else' NL* controlStructureBody
+    ;
+
 whenExpression
     : 'when' NL* ('(' expression ')')? NL* '{' NL* (whenEntry NL*)* NL* '}'
     ;
@@ -616,8 +621,7 @@ callableReference // ?:: here is not an actual operator, it's just a lexer hack 
     ;
 
 assignmentAndOperator
-    : '='
-    | '+='
+    : '+='
     | '-='
     | '*='
     | '/='
@@ -659,7 +663,6 @@ multiplicativeOperator
 asOperator
     : 'as'
     | 'as?'
-    | ':'
     ;
 
 prefixUnaryOperator

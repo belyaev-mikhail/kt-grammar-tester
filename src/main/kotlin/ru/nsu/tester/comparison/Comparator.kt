@@ -6,9 +6,9 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.addKotlinSourceRoot
 import org.jetbrains.kotlin.psi.KtPsiFactory
-import ru.nsu.gen.KotlinParser.KotlinFileContext
 import ru.nsu.tester.comparison.deserialization.PsiTreeBuilder
 import ru.nsu.tester.comparison.wrapper.*
+import ru.nsu.gen.KotlinParser.KotlinFileContext
 
 object Comparator {
     fun inspectTree(path: String, antlrTree: KotlinFileContext): ComparisonResult {
@@ -34,49 +34,39 @@ object Comparator {
     }
 
     private fun TreeWrapper.countNodes() : Int {
-        var nodesNumber = 0
-        for (i in 0 until this.childrenCount) {
-            nodesNumber += this.getChild(i).countNodes()
-        }
+        val nodesNumber = (0 until this.childrenCount).sumBy { this.getChild(it).countNodes() }
         return nodesNumber + 1
-    }
-
-    private fun TreeWrapper.isInChomskyForm() : Boolean {
-        if (childrenCount <= 3) {
-            // If there are 3 children, the middle one should be a terminal
-            if (childrenCount == 3 && this.getChild(1).childrenCount != 0) return false
-            for (i in 0 until childrenCount) {
-                if (!this.getChild(i).isInChomskyForm()) return false
-            }
-            return true
-        }
-        return false
     }
 
     private fun compareTrees(antlrNode: TreeWrapper, psiNode: TreeWrapper, result: ComparisonResult) {
         try {
-            var normalizedAntlrNode = antlrNode
-            if (antlrNode.valuableChildrenCount != psiNode.valuableChildrenCount) {
-                if (antlrNode.textRange == psiNode.textRange
-                        && psiNode.isInChomskyForm() && !antlrNode.isInChomskyForm()) {
-                    normalizedAntlrNode = TreeNormalizer.normalize(antlrNode)
-                } else throw Exception()
-            }
-            if (normalizedAntlrNode.textRange != psiNode.textRange) {
-                println(normalizedAntlrNode.textRange)
+            var normalizedAntlrNode: TreeWrapper? = null
+            var normalizedPsiNode: TreeWrapper? = null
+
+            // If nodes describe different code, there is no point in further checking
+            if (antlrNode.textRange != psiNode.textRange) {
+                println(antlrNode.textRange)
                 println(psiNode.textRange)
                 throw Exception()
             }
+            // If nodes have different structure, try to normalize them
+            if (antlrNode.valuableChildrenCount != psiNode.valuableChildrenCount) {
+                if (psiNode.isInSpecialChomskyForm()) normalizedAntlrNode = TreeNormalizer.normalize(antlrNode)
+                else throw Exception()
 
-            var antlrNextToCheck = normalizedAntlrNode.nextValuableChild(0)
-            var psiNextToCheck = psiNode.nextValuableChild(0)
+                // Sometimes we need to normalize PSI (?)
+                // normalizedPsiNode = TreeNormalizer.normalize(psiNode)
+            }
+
+            var antlrNextToCheck = (normalizedAntlrNode ?: antlrNode).nextValuableChild(0)
+            var psiNextToCheck = (normalizedPsiNode ?: psiNode).nextValuableChild(0)
             while (!(antlrNextToCheck == null && psiNextToCheck == null)) {
                 if (antlrNextToCheck == null || psiNextToCheck == null) throw Exception()
 
                 compareTrees(antlrNextToCheck, psiNextToCheck, result)
 
-                antlrNextToCheck = normalizedAntlrNode.nextValuableChild(antlrNextToCheck.index + 1)
-                psiNextToCheck = psiNode.nextValuableChild(psiNextToCheck.index + 1)
+                antlrNextToCheck = (normalizedAntlrNode ?: antlrNode).nextValuableChild(antlrNextToCheck.index + 1)
+                psiNextToCheck = (normalizedPsiNode ?: psiNode).nextValuableChild(psiNextToCheck.index + 1)
             }
         } catch (ex: Exception) {
             val errorWeight = psiNode.countNodes()
