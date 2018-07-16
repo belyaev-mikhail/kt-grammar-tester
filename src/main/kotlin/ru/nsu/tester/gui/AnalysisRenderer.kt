@@ -3,6 +3,8 @@ package ru.nsu.tester.gui
 import ru.nsu.tester.comparison.ComparisonError
 import java.awt.*
 import javax.swing.*
+import javax.imageio.ImageIO
+import java.io.File
 
 private const val MAX_PANEL_WIDTH = 600
 private const val MAX_PANEL_HEIGHT = 600
@@ -36,19 +38,43 @@ class AnalysisRenderer(comparisonError: ComparisonError) {
         f.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         f.layout = GridBagLayout()
 
+        val mainPanel = JPanel()
+        mainPanel.layout = GridBagLayout()
+        val gc = GridBagConstraints()
+
         var width = maxOf(antlrPanel.treeLayout.bounds.bounds.width, psiPanel.treeLayout.bounds.bounds.width) + OFFSET
         if (width > MAX_PANEL_WIDTH) width = MAX_PANEL_WIDTH
         var height = maxOf(antlrPanel.treeLayout.bounds.bounds.height, psiPanel.treeLayout.bounds.bounds.height) + OFFSET
         if (height > MAX_PANEL_HEIGHT) height = MAX_PANEL_HEIGHT
 
-        val c = f.contentPane
-        val gc = GridBagConstraints()
-
         gc.gridy = 0
         gc.gridx = 0
-        c.add(generateInfoPanel(antlrPanel, "ANTLR", Dimension(width, height)), gc)
+        mainPanel.add(generateInfoPanel(antlrPanel, "ANTLR", Dimension(width, height)), gc)
         gc.gridx = 1
-        c.add(generateInfoPanel(psiPanel, "PSI", Dimension(width, height)), gc)
+        mainPanel.add(generateInfoPanel(psiPanel, "PSI", Dimension(width, height)), gc)
+
+        val utilPanel = JPanel()
+        val screenshotButton = JButton("Snapshot")
+        utilPanel.add(screenshotButton)
+        screenshotButton.addActionListener({
+            try {
+                val robot = Robot()
+                val bounds = mainPanel.bounds
+                bounds.x = mainPanel.locationOnScreen.x
+                bounds.y = mainPanel.locationOnScreen.y
+                val snapShot = robot.createScreenCapture(bounds)
+                ImageIO.write(snapShot, "png", File("Snapshot.png"))
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        })
+
+        val c = f.contentPane
+        gc.gridy = 0
+        gc.gridx = 0
+        c.add(mainPanel, gc)
+        gc.gridy = 1
+        c.add(utilPanel, gc)
 
         f.pack()
         f.setLocationRelativeTo(null)
