@@ -6,7 +6,7 @@ import ru.nsu.tester.comparison.wrapper.PsiTreeWrapper
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
 
 fun TreeWrapper.isValuableTerminal() : Boolean {
-    return name == "PsiToken" && isValuable
+    return (name == "PsiToken" || name.contains("Operator") || name.contains("OPERATION")) && isValuable
 }
 
 fun TreeWrapper.isInSpecialChomskyForm() : Boolean {
@@ -32,7 +32,7 @@ object TreeNormalizer {
 
         if (childrenCount >= 3
                 && !(childrenCount == 3 && children.first().isLeaf() && children.last().isLeaf())
-                && !(childrenCount == 3 && children[1].name.contains("Operator"))) {
+                && !(childrenCount == 3 && PsiTreeWrapper(children[1]).isValuableTerminal())) {
 
             val newNonTerminalTextRange = this.textRange
                     .removeSuffix(getChild(childrenCount - 1)?.textRange ?: "")
@@ -44,7 +44,7 @@ object TreeNormalizer {
             }
 
             val middleChild = getChild(0)
-            if (middleChild != null && !middleChild.name.contains("Operator")) {
+            if (middleChild != null && !(PsiTreeWrapper(middleChild).isValuableTerminal())) {
                 newNonTerminal.textRange += middleChild.textRange
                 newNonTerminal.addChild(middleChild)
                 removeChild(0)

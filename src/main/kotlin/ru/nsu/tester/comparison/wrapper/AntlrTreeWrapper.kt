@@ -24,6 +24,7 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
             .replace(Regex("(//.*?((\r?\n)|$))|((?s)/\\*.*?\\*/)"), "")
             .replace(Regex("[\r\n ]"), "")
             .replace("<EOF>", "")
+            .replace(";", "")
     override val index: Int
         get() {
             val parent = AntlrTreeWrapper(tree.parent)
@@ -81,7 +82,11 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
             return valuable.nextValuableChild(0)
                     ?: nextValuableChild(startChildNumber + valuable.childrenCount)
         }
-        if (start !is TerminalNode && valuable.isValuable && valuable.childrenCount > 0)
+        if (start !is TerminalNode
+                && valuable.isValuable
+                && valuable.childrenCount > 0
+                && !valuable.name.toLowerCase().contains("annotation")
+                && !valuable.name.toLowerCase().contains("label"))
             return valuable
 
         return nextValuableChild(startChildNumber + 1)

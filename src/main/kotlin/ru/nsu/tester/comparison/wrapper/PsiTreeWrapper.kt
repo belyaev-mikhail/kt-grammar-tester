@@ -9,6 +9,7 @@ class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper() {
     override val textRange = tree.textRange
             .replace(Regex("(//.*?((\r?\n)|$))|((?s)/\\*.*?\\*/)"), "")
             .replace(Regex("[\r\n\t ]"), "")
+            .replace(";", "")
     override val index: Int
         get() {
             if (tree.parent == null) return 0
@@ -30,7 +31,11 @@ class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper() {
         val valuable = PsiTreeWrapper(start)
         if (valuable.isRedundant || valuable.valuableChildrenCount == 1)
             return valuable.nextValuableChild(0) ?: nextValuableChild(valuable.index + 1)
-        if (start !is PsiToken && valuable.isValuable && valuable.childrenCount > 0) return valuable
+        if (start !is PsiToken
+                && valuable.isValuable
+                && valuable.childrenCount > 0
+                && !valuable.name.toLowerCase().contains("annotation")
+                && !valuable.name.toLowerCase().contains("label")) return valuable
 
         return nextValuableChild(valuable.index + 1)
     }
