@@ -1,6 +1,6 @@
 package ru.nsu.tester.comparison.wrapper
 
-internal val unvaluable: List<String> = listOf(
+internal val unvaluable = listOf(
         "<EOF>",
         "emptylist",
         "\n", "\r\n",

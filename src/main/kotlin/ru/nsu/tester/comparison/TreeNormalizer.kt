@@ -62,8 +62,12 @@ object TreeNormalizer {
             var childI = getChild(it)
             // bad
             while (childI.isRedundant && childI.childrenCount == 1) childI = childI.getChild(0)
-            if (childI.isRedundant) (0 until childI.childrenCount).forEach { copy.addChild(childI.getChild(it).makeCopy()) }
-            else copy.addChild(childI.makeCopy())
+            if (childI.isRedundant)
+                (0 until childI.childrenCount)
+                    .forEach { if (childI.getChild(it).isValuable)
+                        copy.addChild(childI.getChild(it).makeCopy())
+                    }
+            else if (childI.isValuable) copy.addChild(childI.makeCopy())
         }
         return copy
     }

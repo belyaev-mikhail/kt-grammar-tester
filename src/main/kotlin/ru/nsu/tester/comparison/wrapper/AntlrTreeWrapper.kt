@@ -86,7 +86,8 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
                 && valuable.isValuable
                 && valuable.childrenCount > 0
                 && !valuable.name.toLowerCase().contains("annotation")
-                && !valuable.name.toLowerCase().contains("label"))
+                && !valuable.name.toLowerCase().contains("label")
+                && !valuable.name.toLowerCase().contains("operator"))
             return valuable
 
         return nextValuableChild(startChildNumber + 1)

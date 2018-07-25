@@ -3,8 +3,11 @@ package ru.nsu.tester.comparison
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
 import java.io.File
 
-val LOCAL_PROJECT_PREFIX = "/home/shadrina/tests/KotlinFuzzer/fuzzer/src/test/resources"
-val WEB_PROJECT_PREFIX = "https://github.com/ItsLastDay/KotlinFuzzer/tree/master/fuzzer/src/test/resources"
+val LOCAL_FUZZLER_PROJECT_PREFIX = "/home/shadrina/tests/KotlinFuzzer/fuzzer/src/test/resources"
+val FUZZLER_PROJECT_PREFIX = "https://github.com/ItsLastDay/KotlinFuzzer/tree/master/fuzzer/src/test/resources"
+
+val LOCAL_KOTOED_PROJECT_PREFIX = "/home/shadrina/tests/kotoed"
+val KOTOED_PROJECT_PREFIX = "https://bitbucket.org/vorpal-research/kotoed/src/f50fa0290fb1f33a303873ac62f9b94c513abde9"
 
 fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
 
@@ -69,7 +72,7 @@ data class ComparisonResult(val errors: MutableList<ComparisonError>?) {
         val separator = " | "
         val link = file.absolutePath
                 .replace("\\", "/")
-                .replace(LOCAL_PROJECT_PREFIX, WEB_PROJECT_PREFIX)
+                .replace(LOCAL_KOTOED_PROJECT_PREFIX, KOTOED_PROJECT_PREFIX)
         var output = '[' + file.name + ']' + '(' + link + ')'
         output += separator
         output += precision.format(accuracy) + separator
