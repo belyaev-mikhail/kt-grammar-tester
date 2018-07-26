@@ -548,7 +548,7 @@ thisExpression
     ;
 
 superExpression
-    : 'super' ('<' NL* type NL* '>')? '@' Identifier?
+    : 'super' ('<' NL* type NL* '>')? '@' simpleIdentifier?
     | SUPER_AT
     ;
 
