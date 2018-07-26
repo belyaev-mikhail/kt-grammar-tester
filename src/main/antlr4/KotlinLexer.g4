@@ -36,6 +36,8 @@ WS
 
 NL: '\n' | '\r' '\n'? ;
 
+Hidden: DelimitedComment | LineComment | WS;
+
 //SEPARATORS & OPERATIONS
 
 RESERVED: '...' ;
@@ -71,11 +73,14 @@ ARROW: '->' ;
 DOUBLE_ARROW: '=>' ;
 RANGE: '..' ;
 COLONCOLON: '::' ;
-Q_COLONCOLON: '?::' { split(1, QUEST, COLONCOLON); };
+Q_COLONCOLON: '?::' { split(1, QUEST_NO_WS, COLONCOLON); };
 DOUBLE_SEMICOLON: ';;' ;
 HASH: '#' ;
 AT: '@' ;
-QUEST: '?' ;
+AT_WS: AT (Hidden | NL) ;
+/* Disambiguating ? without spaces and with spaces (sometimes required) */
+QUEST: '?' (Hidden | NL) ;
+QUEST_NO_WS: '?' ;
 ELVIS: '?:' ;
 LANGLE: '<' ;
 RANGLE: '>' ;
@@ -129,8 +134,8 @@ BREAK: 'break' ;
 AS: 'as' ;
 IS: 'is' ;
 IN: 'in' ;
-NOT_IS: '!is' (WS | NL)+ ;
-NOT_IN: '!in' (WS | NL)+ ;
+NOT_IS: '!is' (Hidden | NL) ;
+NOT_IN: '!in' (Hidden | NL) ;
 OUT: 'out' ;
 GETTER: 'get' ;
 SETTER: 'set' ;
@@ -306,9 +311,9 @@ fragment IdentifierOrSoftKey
     | SUSPEND
     ;
 
-AtIdentifier
-    : '@' IdentifierOrSoftKey
-    ;
+//AtIdentifier
+//    : '@' IdentifierOrSoftKey
+//    ;
 
 IdentifierAt
     : IdentifierOrSoftKey '@'
@@ -387,6 +392,7 @@ Inside_DOUBLE_SEMICOLON: DOUBLE_SEMICOLON  -> type(DOUBLE_SEMICOLON) ;
 Inside_HASH: HASH  -> type(HASH) ;
 Inside_AT: AT  -> type(AT) ;
 Inside_QUEST: QUEST  -> type(QUEST) ;
+Inside_QUEST_NO_WS: QUEST_NO_WS -> type(QUEST_NO_WS) ;
 Inside_ELVIS: ELVIS  -> type(ELVIS) ;
 Inside_LANGLE: LANGLE  -> type(LANGLE) ;
 Inside_RANGLE: RANGLE  -> type(RANGLE) ;
@@ -475,7 +481,7 @@ Inside_LongLiteral: LongLiteral -> type(LongLiteral) ;
 
 Inside_Identifier: Identifier -> type(Identifier) ;
 Inside_IdentifierAt: IdentifierAt -> type(IdentifierAt) ;
-Inside_AtIdentifier: AtIdentifier -> type(AtIdentifier) ;
+// Inside_AtIdentifier: AtIdentifier -> type(AtIdentifier) ;
 Inside_Comment: (LineComment | DelimitedComment) -> channel(HIDDEN) ;
 Inside_WS: WS -> skip ;
 // this is the only actual difference between default and 'Inside' modes
