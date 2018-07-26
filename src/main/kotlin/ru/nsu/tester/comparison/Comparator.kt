@@ -45,8 +45,8 @@ object Comparator {
 
             // If nodes describe different code, there is no point in further checking
             if (antlrNode.textRange != psiNode.textRange) {
-                println(antlrNode.textRange)
-                println(psiNode.textRange)
+                // println(antlrNode.textRange)
+                // println(psiNode.textRange)
                 throw Exception()
             }
             // If nodes have different structure, try to normalize them

@@ -7,11 +7,13 @@ import ru.nsu.tester.parsing.ParsingResult
 import java.awt.EventQueue
 import java.io.File
 
+private const val RESULTS_PATH = "doc/results/fuzzer-result.md"
+
 fun main(args: Array<String>) {
     val dir = File(if (args.isNotEmpty()) args[0] else ".")
     assert(dir.exists() && dir.isDirectory)
 
-    val resultFile = File("fuzzer-result.md")
+    val resultFile = File(RESULTS_PATH)
     resultFile.writeText("File | Precision | Recall | F-score\n")
     resultFile.appendText(":----:|:----:|:----:|:----:\n")
 
@@ -26,7 +28,7 @@ fun main(args: Array<String>) {
                 try {
                     result = ParsingOverview.parse(it.inputStream())
                 } catch(ex: Exception) {
-                    println("Antlr is unable to parse it")
+                    println("Antlr is not able to parse it")
                 }
 
                 if (result != null) {
@@ -34,7 +36,7 @@ fun main(args: Array<String>) {
                     if (result.isCorrect()) {
                         val compareResult = Comparator.inspectTree(it.path, result.root!!)
                         compareResult.consoleOutput()
-                        resultFile.appendText(compareResult.fileOutput(it) + "\n")
+                        // resultFile.appendText(compareResult.fileOutput(it) + "\n")
                         if (compareResult.isCorrect()) correctCount++
                         /* Uncomment to view erroneous subtree */
 
