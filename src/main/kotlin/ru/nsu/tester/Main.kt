@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
                     if (result.isCorrect()) {
                         val compareResult = Comparator.inspectTree(it.path, result.root!!)
                         compareResult.consoleOutput()
-                        // resultFile.appendText(compareResult.fileOutput(it) + "\n")
+                        resultFile.appendText(compareResult.fileOutput(it) + "\n")
                         if (compareResult.isCorrect()) correctCount++
                         /* Uncomment to view erroneous subtree */
                         /*
