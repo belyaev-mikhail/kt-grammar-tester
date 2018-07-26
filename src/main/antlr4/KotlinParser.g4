@@ -222,7 +222,17 @@ typeParameters
     ;
 
 typeParameter
-    : modifierList? NL* simpleIdentifier (NL* ':' NL* type)?
+    : typeParameterModifiers? NL* simpleIdentifier (NL* ':' NL* type)?
+    ;
+
+typeParameterModifiers
+    : typeParameterModifier+
+    ;
+
+typeParameterModifier
+    : reificationModifier NL*
+    | varianceModifier NL*
+    | annotation
     ;
 
 type
@@ -428,11 +438,16 @@ typeArguments
     ;
 
 typeProjection
-    : typeProjectionModifierList? type | '*'
+    : typeProjectionModifiers? type | '*'
     ;
 
-typeProjectionModifierList
-    : varianceModifier+
+typeProjectionModifiers
+    : typeProjectionModifier+
+    ;
+
+typeProjectionModifier
+    : varianceModifier NL*
+    | annotation
     ;
 
 valueArgument
@@ -702,7 +717,6 @@ modifier
     | propertyModifier
     | inheritanceModifier
     | parameterModifier
-    | typeParameterModifier
     | platformModifier) NL*
     ;
 
@@ -756,7 +770,7 @@ parameterModifier
     | 'crossinline'
     ;
 
-typeParameterModifier
+reificationModifier
     : 'reified'
     ;
 
@@ -851,7 +865,8 @@ shebangLine
 
 quest
     : QUEST_NO_WS
-    | QUEST;
+    | QUEST_WS
+    ;
 
 semi
     : (';' | NL) NL* // actually, it's WS or comment between ';', here it's handled in lexer (see ;; token)
