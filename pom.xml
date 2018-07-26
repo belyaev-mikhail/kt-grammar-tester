@@ -11,10 +11,18 @@
     <properties>
         <main.class>ru.nsu.tester.MainKt</main.class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.2.41</kotlin.version>
+        <kotlin.version>1.2.51</kotlin.version>
         <antlr4.visitor>true</antlr4.visitor>
         <antlr4.listener>true</antlr4.listener>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>bintray-vorpal-research-kotlin-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/vorpal-research/kotlin-maven</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -36,6 +44,11 @@
             <groupId>org.abego.treelayout</groupId>
             <artifactId>org.abego.treelayout.core</artifactId>
             <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>kootstrap</artifactId>
+            <version>0.0.1.2-41</version>
         </dependency>
     </dependencies>
 
