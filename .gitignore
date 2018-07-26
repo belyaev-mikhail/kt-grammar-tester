@@ -10,7 +10,6 @@ buildNumber.properties
 *.iml
 .idea
 *.tokens
-src/main/kotlin/ru/nsu/gen
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
