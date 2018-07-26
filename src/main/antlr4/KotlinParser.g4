@@ -55,7 +55,7 @@ classDeclaration
     ;
 
 primaryConstructor
-    : modifierList? ('constructor' NL*)? classParameters
+    : (modifierList? 'constructor' NL*)? classParameters
     ;
 
 classParameters
@@ -133,7 +133,7 @@ functionDeclaration
     : modifierList?
     'fun'
     (NL* typeParameters)?
-    (NL* type NL* '.')? // ?. here is a disambiguation in cases where tokens '?' and '.' go after each other
+    (NL* receiverType NL* '.')? // ?. here is a disambiguation in cases where tokens '?' and '.' go after each other
     (NL* simpleIdentifier)
     NL* functionValueParameters
     (NL* ':' NL* type)?
@@ -150,6 +150,10 @@ functionValueParameter
     ;
 
 parameter
+    : simpleIdentifier NL* ':' NL* type
+    ;
+
+setterParameter
     : simpleIdentifier NL* (':' NL* type)?
     ;
 
@@ -175,7 +179,7 @@ companionObject
 propertyDeclaration
     : modifierList? ('val' | 'var')
     (NL* typeParameters)?
-    (NL* type NL* '.')?
+    (NL* receiverType NL* '.')?
     (NL* (multiVariableDeclaration | variableDeclaration))
     (NL* typeConstraints)?
     (NL* ('=' NL* expression | propertyDelegate))?
@@ -206,7 +210,7 @@ getter
 
 setter
     : modifierList? 'set'
-    | modifierList? 'set' NL* '(' (annotation | parameterModifier)* parameter ')' (NL* ':' NL* type)? NL* functionBody
+    | modifierList? 'set' NL* '(' (annotation | parameterModifier)* setterParameter ')' (NL* ':' NL* type)? NL* functionBody
     ;
 
 typeAlias
@@ -234,7 +238,7 @@ typeModifierList
     ;
 
 parenthesizedType
-    : '(' type ')'
+    : '(' NL* type NL* ')'
     ;
 
 nullableType
@@ -242,8 +246,7 @@ nullableType
     ;
 
 typeReference
-    : '(' typeReference ')'
-    | userType
+    : userType
     | 'dynamic' // do we need a separate dynamic support here?
     ;
 
@@ -262,8 +265,8 @@ userType
     ;
 
 parenthesizedUserType
-    : '(' userType ')'
-    | '(' parenthesizedUserType ')'
+    : '(' NL* userType NL* ')'
+    | '(' NL* parenthesizedUserType NL* ')'
     ;
 
 simpleUserType
@@ -372,7 +375,7 @@ unaryPrefix
 
 postfixUnaryExpression
     : primaryExpression
-    | primaryExpression (postfixUnarySuffix)*
+    | primaryExpression postfixUnarySuffix+
     ;
 
 postfixUnarySuffix
@@ -412,11 +415,11 @@ callSuffix
     ;
 
 annotatedLambda
-    : (annotation | IdentifierAt)* NL* lambdaLiteral
+    : annotation* labelDefinition? NL* lambdaLiteral
     ;
 
 valueArguments
-    : '(' NL* valueArgument? NL* ')'
+    : '(' NL* ')'
     | '(' NL* valueArgument (NL* ',' NL* valueArgument)* NL* ')'
     ;
 
@@ -429,7 +432,7 @@ typeProjection
     ;
 
 typeProjectionModifierList
-    : varianceAnnotation+
+    : varianceModifier+
     ;
 
 valueArgument
@@ -508,11 +511,11 @@ multiLineStringExpression
 
 lambdaLiteral // anonymous functions?
     : LCURL NL* statements NL* RCURL
-    | LCURL NL* lambdaParameters NL* ARROW NL* statements NL* '}'
+    | LCURL NL* lambdaParameters? NL* ARROW NL* statements NL* '}'
     ;
 
 lambdaParameters
-    : lambdaParameter? (NL* COMMA NL* lambdaParameter)*
+    : lambdaParameter (NL* COMMA NL* lambdaParameter)*
     ;
 
 lambdaParameter
@@ -695,7 +698,6 @@ modifier
     : (classModifier
     | memberModifier
     | visibilityModifier
-    | varianceAnnotation
     | functionModifier
     | propertyModifier
     | inheritanceModifier
@@ -724,7 +726,7 @@ visibilityModifier
     | 'protected'
     ;
 
-varianceAnnotation
+varianceModifier
     : 'in'
     | 'out'
     ;
