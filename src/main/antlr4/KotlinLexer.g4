@@ -36,7 +36,7 @@ WS
 
 NL: '\n' | '\r' '\n'? ;
 
-Hidden: DelimitedComment | LineComment | WS;
+fragment Hidden: DelimitedComment | LineComment | WS;
 
 //SEPARATORS & OPERATIONS
 
