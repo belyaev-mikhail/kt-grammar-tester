@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
     val dir = File(if (args.isNotEmpty()) args[0] else ".")
     assert(dir.exists() && dir.isDirectory)
 
-    val resultFile = File("fuzzer-result.md")
+    val resultFile = File("doc/fuzzer-result.md")
     resultFile.writeText("File | Precision | Recall | F-score\n")
     resultFile.appendText(":----:|:----:|:----:|:----:\n")
 
@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
                 try {
                     result = ParsingOverview.parse(it.inputStream())
                 } catch(ex: Exception) {
-                    println("Antlr is unable to parse it")
+                    println("Antlr is not able to parse it")
                 }
 
                 if (result != null) {

@@ -1,8 +1,7 @@
 package ru.nsu.tester.parsing
 
 import org.antlr.v4.runtime.*
-import ru.nsu.gen.KotlinLexer
-import ru.nsu.gen.KotlinParser
+import ru.nsu.gen.*
 import ru.nsu.gen.KotlinParser.KotlinFileContext
 import java.io.FileInputStream
 import java.util.*

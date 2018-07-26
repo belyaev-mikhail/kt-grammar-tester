@@ -60,7 +60,7 @@ object TreeNormalizer {
         val copy = PsiRule(name, textRange)
         (0 until childrenCount).forEach {
             var childI = getChild(it)
-            // bad
+            // TODO: bad
             while (childI.isRedundant && childI.childrenCount == 1) childI = childI.getChild(0)
             if (childI.isRedundant)
                 (0 until childI.childrenCount)
