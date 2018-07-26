@@ -23,7 +23,7 @@ script
     ;
 
 fileAnnotation
-    : ('@file' ':' ('[' unescapedAnnotation+ ']' | unescapedAnnotation) semi)+
+    : ('@file' NL* ':' NL* ('[' unescapedAnnotation+ ']' | unescapedAnnotation) semi)+
     ;
 
 packageHeader
@@ -222,7 +222,17 @@ typeParameters
     ;
 
 typeParameter
-    : modifierList? NL* simpleIdentifier (NL* ':' NL* type)?
+    : typeParameterModifiers? NL* simpleIdentifier (NL* ':' NL* type)?
+    ;
+
+typeParameterModifiers
+    : typeParameterModifier+
+    ;
+
+typeParameterModifier
+    : reificationModifier NL*
+    | varianceModifier NL*
+    | annotation
     ;
 
 type
@@ -242,7 +252,7 @@ parenthesizedType
     ;
 
 nullableType
-    : (typeReference | parenthesizedType) NL* '?'+
+    : (typeReference | parenthesizedType) NL* quest+
     ;
 
 typeReference
@@ -428,11 +438,16 @@ typeArguments
     ;
 
 typeProjection
-    : typeProjectionModifierList? type | '*'
+    : typeProjectionModifiers? type | '*'
     ;
 
-typeProjectionModifierList
-    : varianceModifier+
+typeProjectionModifiers
+    : typeProjectionModifier+
+    ;
+
+typeProjectionModifier
+    : varianceModifier NL*
+    | annotation
     ;
 
 valueArgument
@@ -543,12 +558,12 @@ objectLiteral
     ;
 
 thisExpression
-    : 'this' AtIdentifier?
+    : 'this'
     | THIS_AT
     ;
 
 superExpression
-    : 'super' ('<' NL* type NL* '>')? AtIdentifier?
+    : 'super' ('<' NL* type NL* '>')? ('@' simpleIdentifier)?
     | SUPER_AT
     ;
 
@@ -624,7 +639,7 @@ jumpExpression
     ;
 
 callableReference // ?:: here is not an actual operator, it's just a lexer hack to avoid (?: + :) vs (? + ::) ambiguity
-    : (receiverType? NL* ('::' | '?::') NL* (simpleIdentifier | 'class'))
+    : (receiverType? NL* '::' NL* (simpleIdentifier | 'class'))
     ;
 
 assignmentAndOperator
@@ -687,7 +702,7 @@ postfixUnaryOperator
     ;
 
 memberAccessOperator
-    : '.' | '?' /* XXX: no WS here */ '.' | '::'
+    : '.' | QUEST_NO_WS /* XXX: no WS here */ '.' | '::'
     ;
 
 modifierList
@@ -702,7 +717,6 @@ modifier
     | propertyModifier
     | inheritanceModifier
     | parameterModifier
-    | typeParameterModifier
     | platformModifier) NL*
     ;
 
@@ -756,7 +770,7 @@ parameterModifier
     | 'crossinline'
     ;
 
-typeParameterModifier
+reificationModifier
     : 'reified'
     ;
 
@@ -774,18 +788,17 @@ annotation
     ;
 
 singleAnnotation
-    : annotationUseSiteTarget ':' NL* unescapedAnnotation
-    | AtIdentifier (NL* '.' simpleIdentifier)* typeArguments? valueArguments?
+    : annotationUseSiteTarget NL* ':' NL* unescapedAnnotation
+    | '@' unescapedAnnotation
     ;
 
 multiAnnotation
-    : annotationUseSiteTarget ':' '[' unescapedAnnotation+ ']'
+    : annotationUseSiteTarget NL* ':' NL* '[' unescapedAnnotation+ ']'
     | '@[' unescapedAnnotation+ ']'
     ;
 
 annotationUseSiteTarget
     : '@field'
-    | '@file'
     | '@property'
     | '@get'
     | '@set'
@@ -848,6 +861,11 @@ identifier
 
 shebangLine
     : ShebangLine
+    ;
+
+quest
+    : QUEST_NO_WS
+    | QUEST_WS
     ;
 
 semi
