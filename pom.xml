@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -37,6 +38,11 @@
             <artifactId>org.abego.treelayout.core</artifactId>
             <version>1.0.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>kootstrap</artifactId>
+            <version>0.0.1.2-41</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -54,6 +60,12 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/antlr4</sourceDir>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -73,7 +85,9 @@
                     <execution>
                         <id>make-assembly</id>
                         <phase>package</phase>
-                        <goals> <goal>single</goal> </goals>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                         <configuration>
                             <archive>
                                 <manifest>
@@ -98,8 +112,24 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main/antlr</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/generated-sources/antlr4/ru/nsu/gen/</outputDirectory>
+                    <arguments>
+                        <argument>-package</argument>
+                        <argument>ru.nsu.gen</argument>
+                    </arguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>bintray-vorpal-research-kotlin-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/vorpal-research/kotlin-maven</url>
+        </repository>
+    </repositories>
 
 </project>

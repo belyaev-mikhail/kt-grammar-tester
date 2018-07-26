@@ -11,6 +11,7 @@
  */
 
 lexer grammar KotlinLexer;
+options { superClass = KotlinLexerBase; }
 
 import UnicodeClasses;
 
@@ -70,7 +71,7 @@ ARROW: '->' ;
 DOUBLE_ARROW: '=>' ;
 RANGE: '..' ;
 COLONCOLON: '::' ;
-Q_COLONCOLON: '?::' ;
+Q_COLONCOLON: '?::' { split(1, QUEST, COLONCOLON); };
 DOUBLE_SEMICOLON: ';;' ;
 HASH: '#' ;
 AT: '@' ;
@@ -381,7 +382,7 @@ Inside_DOUBLE_ARROW: DOUBLE_ARROW  -> type(DOUBLE_ARROW) ;
 Inside_RANGE: RANGE  -> type(RANGE) ;
 Inside_RESERVED: RESERVED -> type(RESERVED) ;
 Inside_COLONCOLON: COLONCOLON  -> type(COLONCOLON) ;
-Inside_Q_COLONCOLON: Q_COLONCOLON -> type(Q_COLONCOLON) ;
+Inside_Q_COLONCOLON: Q_COLONCOLON { split(1, QUEST, COLONCOLON); };
 Inside_DOUBLE_SEMICOLON: DOUBLE_SEMICOLON  -> type(DOUBLE_SEMICOLON) ;
 Inside_HASH: HASH  -> type(HASH) ;
 Inside_AT: AT  -> type(AT) ;

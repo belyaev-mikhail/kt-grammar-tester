@@ -37,12 +37,12 @@ fun main(args: Array<String>) {
                         resultFile.appendText(compareResult.fileOutput(it) + "\n")
                         if (compareResult.isCorrect()) correctCount++
                         /* Uncomment to view erroneous subtree */
-                        /*
+
                         else
                             EventQueue.invokeLater {
                                 run { AnalysisRenderer(compareResult.errors!!.first()).display() }
                             }
-                        */
+
                         totalCount++
                     }
                     println()
