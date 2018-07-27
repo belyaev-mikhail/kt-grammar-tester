@@ -35,7 +35,7 @@ importList
     ;
 
 importHeader
-    : 'import' identifier ('.' '*' | importAlias)? semi
+    : 'import' identifier ('.' '*' | importAlias)? semi?
     ;
 
 importAlias
@@ -261,13 +261,14 @@ typeReference
     ;
 
 functionType
-    : (receiverType NL* '.' NL*)? functionTypeParameters  NL* '->' (NL* type)?
+    : (receiverType NL* '.' NL*)? functionTypeParameters NL* '->' NL* type
     ;
 
 receiverType
-    : parenthesizedType
+    : typeModifierList?
+    ( parenthesizedType
     | nullableType
-    | typeReference
+    | typeReference)
     ;
 
 userType
@@ -305,7 +306,7 @@ statements
     ;
 
 statement
-    : labelDefinition*
+    : (labelDefinition | annotation)*
     ( declaration
     | assignment
     | loopStatement
@@ -350,7 +351,7 @@ infixOperation
     ;
 
 elvisExpression
-    : infixFunctionCall (NL* '?:' NL* infixFunctionCall)*
+    : infixFunctionCall (NL* elvis NL* infixFunctionCall)*
     ;
 
 infixFunctionCall
@@ -601,7 +602,7 @@ typeTest
     ;
 
 tryExpression
-    : 'try' NL* block (NL* catchBlock)* (NL* finallyBlock)?
+    : 'try' NL* block ((NL* catchBlock)+ (NL* finallyBlock)? | NL* finallyBlock)
     ;
 
 catchBlock
@@ -692,17 +693,17 @@ prefixUnaryOperator
     | '--'
     | '-'
     | '+'
-    | '!'
+    | excl
     ;
 
 postfixUnaryOperator
     : '++'
     | '--'
-    | '!!'
+    | EXCL_NO_WS excl
     ;
 
 memberAccessOperator
-    : '.' | QUEST_NO_WS /* XXX: no WS here */ '.' | '::'
+    : '.' | safeNav | '::'
     ;
 
 modifierList
@@ -794,7 +795,7 @@ singleAnnotation
 
 multiAnnotation
     : annotationUseSiteTarget NL* ':' NL* '[' unescapedAnnotation+ ']'
-    | '@[' unescapedAnnotation+ ']'
+    | '@' '[' unescapedAnnotation+ ']'
     ;
 
 annotationUseSiteTarget
@@ -809,7 +810,8 @@ annotationUseSiteTarget
     ;
 
 unescapedAnnotation
-    : identifier typeArguments? valueArguments?
+    : constructorInvocation
+    | userType
     ;
 
 simpleIdentifier
@@ -866,6 +868,19 @@ shebangLine
 quest
     : QUEST_NO_WS
     | QUEST_WS
+    ;
+
+elvis
+    : QUEST_NO_WS ':'
+    ;
+
+safeNav
+    : QUEST_NO_WS '.'
+    ;
+
+excl
+    : EXCL_NO_WS
+    | EXCL_WS
     ;
 
 semi
