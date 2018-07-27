@@ -1,13 +1,8 @@
 package ru.nsu.tester.comparison
 
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
+import ru.nsu.util.Configuration
 import java.io.File
-
-private const val LOCAL_FUZZER_PROJECT_PREFIX = "/home/shadrina/tests/KotlinFuzzer/fuzzer/src/test/resources"
-private const val FUZZER_PROJECT_PREFIX = "https://github.com/ItsLastDay/KotlinFuzzer/tree/master/fuzzer/src/test/resources"
-
-private const val LOCAL_KOTOED_PROJECT_PREFIX = "/home/shadrina/tests/kotoed"
-private const val KOTOED_PROJECT_PREFIX = "https://bitbucket.org/vorpal-research/kotoed/src/f50fa0290fb1f33a303873ac62f9b94c513abde9"
 
 fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
 
@@ -67,12 +62,12 @@ data class ComparisonResult(val errors: MutableList<ComparisonError>?) {
             println("F-score: ${fScore.format(accuracy)}")
         }
     }
-    fun fileOutput(file: File) : String {
+    fun fileOutput(file: File, cfg: Configuration) : String {
         countFScore()
         val separator = " | "
         val link = file.absolutePath
                 .replace("\\", "/")
-                .replace(LOCAL_FUZZER_PROJECT_PREFIX, FUZZER_PROJECT_PREFIX)
+                .replace(cfg.localPrefix + cfg.testProjectLocalPath, cfg.testProjectWebPrefix)
         var output = '[' + file.name + ']' + '(' + link + ')'
         output += separator
         output += precision.format(accuracy) + separator

@@ -1,21 +1,14 @@
 package ru.nsu.tester
 
 import ru.nsu.tester.comparison.Comparator
-import ru.nsu.tester.gui.AnalysisRenderer
-import ru.nsu.tester.parsing.ParsingOverview
-import ru.nsu.tester.parsing.ParsingResult
-import java.awt.EventQueue
+import ru.nsu.tester.parsing.ParsingOverview import ru.nsu.tester.parsing.ParsingResult
+import ru.nsu.util.Configuration
 import java.io.File
 
-private const val RESULTS_PATH = "doc/results/fuzzer-result.md"
-
 fun main(args: Array<String>) {
-    val dir = File(if (args.isNotEmpty()) args[0] else ".")
-    assert(dir.exists() && dir.isDirectory)
-
-    val resultFile = File(RESULTS_PATH)
-    resultFile.writeText("File | Precision | Recall | F-score\n")
-    resultFile.appendText(":----:|:----:|:----:|:----:\n")
+    val cfg = Configuration.KT_COMPILER
+    val resultFile = cfg.getResultFile()
+    val dir = cfg.getDirectory()
 
     var correctCount = 0
     var totalCount = 0
@@ -28,27 +21,25 @@ fun main(args: Array<String>) {
                 try {
                     result = ParsingOverview.parse(it.inputStream())
                 } catch(ex: Exception) {
-                    println("Antlr is not able to parse it")
+                    println("ERROR: ANTLR throws Exception")
+                    return@forEach
                 }
+                result.output()
 
-                if (result != null) {
-                    result.output()
-                    if (result.isCorrect()) {
-                        val compareResult = Comparator.inspectTree(it.path, result.root!!)
-                        compareResult.consoleOutput()
-                        resultFile.appendText(compareResult.fileOutput(it) + "\n")
-                        if (compareResult.isCorrect()) correctCount++
-                        /* Uncomment to view erroneous subtree */
-
-                        else
-                            EventQueue.invokeLater {
-                                run { AnalysisRenderer(compareResult.errors!!.first()).display() }
-                            }
-
-                        totalCount++
+                val antlrTree = if (result.isCorrect()) result.root!! else null
+                val compareResult = Comparator.inspectTree(it.path, antlrTree)
+                compareResult?.consoleOutput()
+                if (compareResult != null) resultFile.appendText(compareResult.fileOutput(it, cfg) + "\n")
+                if (compareResult != null && compareResult.isCorrect()) correctCount++
+                /* Uncomment to view erroneous subtree */
+                /*
+                else if (compareResult != null)
+                    EventQueue.invokeLater {
+                        run { AnalysisRenderer(compareResult.errors!!.first()).display() }
                     }
-                    println()
-                }
+                */
+                totalCount++
+                println()
             }
 
     println("Correct: $correctCount / $totalCount")
