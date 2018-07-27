@@ -11,7 +11,8 @@ val redundant = listOf(
         "Parameter",
         "EnumEntries",
         "PostfixUnarySuffix",
-        "NavigationSuffix")
+        "NavigationSuffix",
+        "UnescapedAnnotation")
 
 class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
     override val name = tree::class.simpleName?.removeSuffix("Context") ?: " "
@@ -84,11 +85,7 @@ class AntlrTreeWrapper(val tree: ParseTree) : TreeWrapper() {
         }
         if (start !is TerminalNode
                 && valuable.isValuable
-                && valuable.childrenCount > 0
-                && !valuable.name.toLowerCase().contains("annotation")
-                && !valuable.name.toLowerCase().contains("label")
-                && !valuable.name.toLowerCase().contains("operator"))
-            return valuable
+                && valuable.childrenCount > 0) return valuable
 
         return nextValuableChild(startChildNumber + 1)
     }

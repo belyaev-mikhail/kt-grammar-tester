@@ -33,9 +33,7 @@ class PsiTreeWrapper(val tree: PsiRule) : TreeWrapper() {
             return valuable.nextValuableChild(0) ?: nextValuableChild(valuable.index + 1)
         if (start !is PsiToken
                 && valuable.isValuable
-                && valuable.childrenCount > 0
-                && !valuable.name.toLowerCase().contains("annotation")
-                && !valuable.name.toLowerCase().contains("label")) return valuable
+                && valuable.childrenCount > 0) return valuable
 
         return nextValuableChild(valuable.index + 1)
     }
