@@ -9,9 +9,15 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import ru.nsu.tester.comparison.deserialization.PsiTreeBuilder
 import ru.nsu.tester.comparison.wrapper.*
 import ru.nsu.gen.KotlinParser.KotlinFileContext
+import ru.nsu.tester.comparison.deserialization.PsiRule
 
 object Comparator {
-    fun inspectTree(path: String, antlrTree: KotlinFileContext): ComparisonResult {
+    private fun PsiRule.hasErrors() : Boolean {
+        if (this.name.toLowerCase().contains("error")) return true
+        return this.children.any { it.hasErrors() }
+    }
+
+    fun inspectTree(path: String, antlrTree: KotlinFileContext?): ComparisonResult? {
         val cfg = CompilerConfiguration()
         cfg.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
         cfg.addKotlinSourceRoot(path)
@@ -19,12 +25,23 @@ object Comparator {
         val ktFile = FooBarCompiler.setupMyEnv(cfg).getSourceFiles().first()
         val parsed = KtPsiFactory(ktFile).createFile(ktFile.virtualFile.path, ktFile.text)
 
-        // TODO: assert psi doesn't have errors
         val psiTree = PsiTreeBuilder.build(parsed.treeElement!!)
+
+        val psiTreeHasErrors = psiTree.hasErrors()
+        if (antlrTree == null && !psiTreeHasErrors) {
+            println("ERROR: ANTLR is not able to parse correct test")
+            return null
+        }
+        if (antlrTree != null && psiTreeHasErrors) {
+            println("ERROR: ANTLR parses erroneous test")
+            return null
+        }
+        if (antlrTree == null && psiTreeHasErrors) return null
+
         val errors = mutableListOf<ComparisonError>()
         val result = ComparisonResult(errors)
 
-        val antlrNode = AntlrTreeWrapper(antlrTree)
+        val antlrNode = AntlrTreeWrapper(antlrTree!!)
         val psiNode = PsiTreeWrapper(psiTree)
         result.totalOutput = antlrNode.countNodes()
         result.totalGold = psiNode.countNodes()
