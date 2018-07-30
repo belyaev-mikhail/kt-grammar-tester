@@ -389,7 +389,8 @@ unaryPrefix
     ;
 
 postfixUnaryExpression
-    : primaryExpression postfixUnarySuffix*
+    : primaryExpression
+    | primaryExpression postfixUnarySuffix+
     ;
 
 postfixUnarySuffix
