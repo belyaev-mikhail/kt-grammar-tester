@@ -90,7 +90,7 @@ explicitDelegation
     ;
 
 classBody
-    : '{' NL* classMemberDeclarations? NL* '}'
+    : '{' NL* classMemberDeclarations NL* '}'
     ;
 
 classMemberDeclarations
@@ -118,7 +118,7 @@ constructorDelegationCall
     ;
 
 enumClassBody
-    : '{' NL* enumEntries? (NL* ';' NL* classMemberDeclarations?)? NL* '}'
+    : '{' NL* enumEntries? (NL* ';' NL* classMemberDeclarations)? NL* '}'
     ;
 
 enumEntries

@@ -11,7 +11,6 @@
  */
 
 lexer grammar KotlinLexer;
-options { superClass = KotlinLexerBase; }
 
 import UnicodeClasses;
 

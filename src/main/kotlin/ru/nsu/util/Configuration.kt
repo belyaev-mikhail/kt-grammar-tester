@@ -10,7 +10,7 @@ private const val KOTOED_RESULTS_PATH = "doc/results/kotoed-result.md"
 private const val FUZZER_RESULTS_PATH = "doc/results/fuzzer-result.md"
 private const val KT_COMPILER_RESULTS_PATH = "doc/results/kt-compiler-result.md"
 
-private const val KOTOED_PROJECT_PREFIX = "https://bitbucket.org/vorpal-research/kotoed/src/f50fa0290fb1f33a303873ac62f9b94c513abde9"
+private const val KOTOED_PROJECT_PREFIX = "https://bitbucket.org/vorpal-research/kotoed/src/tip"
 private const val FUZZER_PROJECT_PREFIX = "https://github.com/ItsLastDay/KotlinFuzzer/tree/master/fuzzer/src/test/resources"
 private const val KT_COMPILER_PROJECT_PREFIX = "https://github.com/JetBrains/kotlin/tree/master/compiler/testData/psi"
 
