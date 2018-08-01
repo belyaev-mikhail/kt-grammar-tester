@@ -1,9 +1,9 @@
 package ru.nsu.tester
 
 import ru.nsu.tester.comparison.Comparator
-import ru.nsu.tester.parsing.ParsingOverview import ru.nsu.tester.parsing.ParsingResult
+import ru.nsu.tester.parsing.ParsingOverview
+import ru.nsu.tester.parsing.ParsingResult
 import ru.nsu.util.Configuration
-import java.io.File
 
 fun main(args: Array<String>) {
     val cfg = Configuration.KT_COMPILER
@@ -14,6 +14,7 @@ fun main(args: Array<String>) {
     var totalCount = 0
     dir.walkTopDown()
             .filter { it.extension == "kt" }
+            .sortedBy { it.absolutePath }
             .forEach {
                 println("${it.name}:")
 

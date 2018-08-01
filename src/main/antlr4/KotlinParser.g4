@@ -15,11 +15,11 @@ parser grammar KotlinParser;
 options { tokenVocab = KotlinLexer; }
 
 kotlinFile
-    : shebangLine? NL* fileAnnotation* packageHeader? importList topLevelObject* EOF
+    : shebangLine? NL* fileAnnotation* packageHeader? importList? topLevelObject* EOF
     ;
 
 script
-    : shebangLine? NL* fileAnnotation* packageHeader? importList (statement semi)* EOF
+    : shebangLine? NL* fileAnnotation* packageHeader? importList? (statement semi)* EOF
     ;
 
 fileAnnotation
@@ -31,7 +31,7 @@ packageHeader
     ;
 
 importList
-    : importHeader*
+    : importHeader+
     ;
 
 importHeader
@@ -131,15 +131,11 @@ enumEntry
 
 functionDeclaration
     : modifiers?
-    functionHeader
+    'fun' (NL* typeParameters)? (NL* receiverType NL* '.')? NL* simpleIdentifier
     NL* functionValueParameters
     (NL* ':' NL* type)?
     (NL* typeConstraints)?
     (NL* functionBody)?
-    ;
-
-functionHeader
-    : 'fun' (NL* typeParameters)? (NL* receiverType NL* '.')? NL* simpleIdentifier
     ;
 
 functionValueParameters
