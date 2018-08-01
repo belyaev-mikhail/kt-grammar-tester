@@ -17,15 +17,18 @@ private const val KT_COMPILER_PROJECT_PREFIX = "https://github.com/JetBrains/kot
 // change me
 private const val MY_TEST_PATH = ""
 
-enum class Configuration(
+sealed class Configuration(
         val resultPath: String,
         val testProjectLocalPath: String,
         val testProjectWebPrefix: String
 ) {
-    KOTOED(KOTOED_RESULTS_PATH, KOTOED_PROJECT_PATH, KOTOED_PROJECT_PREFIX),
-    FUZZER(FUZZER_RESULTS_PATH, FUZZER_PROJECT_PATH, FUZZER_PROJECT_PREFIX),
-    KT_COMPILER(KT_COMPILER_RESULTS_PATH, KT_COMPILER_PROJECT_PATH, KT_COMPILER_PROJECT_PREFIX),
-    LOCAL(MY_TEST_PATH, "", "");
+    object KOTOED: Configuration(KOTOED_RESULTS_PATH, KOTOED_PROJECT_PATH, KOTOED_PROJECT_PREFIX)
+    object FUZZER: Configuration(FUZZER_RESULTS_PATH, FUZZER_PROJECT_PATH, FUZZER_PROJECT_PREFIX)
+    object KT_COMPILER: Configuration(KT_COMPILER_RESULTS_PATH, KT_COMPILER_PROJECT_PATH, KT_COMPILER_PROJECT_PREFIX)
+    class Local(resultPath: String,
+                     testProjectLocalPath: String,
+                     testProjectWebPrefix: String = ""):
+            Configuration(resultPath, testProjectLocalPath, testProjectWebPrefix);
 
     val localPrefix = System.getProperty("user.dir").replace("\\", "/") + "/"
 
