@@ -23,11 +23,11 @@ script
     ;
 
 fileAnnotation
-    : ('@file' NL* ':' NL* ('[' unescapedAnnotation+ ']' | unescapedAnnotation) semi)+
+    : '@file' NL* ':' NL* ('[' unescapedAnnotation+ ']' | unescapedAnnotation) NL*
     ;
 
 packageHeader
-    : ('package' identifier semi)?
+    : ('package' identifier semi?)?
     ;
 
 importList
@@ -43,11 +43,11 @@ importAlias
     ;
 
 topLevelObject
-    : declaration semis
+    : declaration semis?
     ;
 
 classDeclaration
-    : modifierList? ('class' | 'interface') NL* simpleIdentifier
+    : modifiers? ('class' | 'interface') NL* simpleIdentifier
     (NL* typeParameters)? (NL* primaryConstructor)?
     (NL* ':' NL* delegationSpecifiers)?
     (NL* typeConstraints)?
@@ -55,7 +55,7 @@ classDeclaration
     ;
 
 primaryConstructor
-    : (modifierList? 'constructor' NL*)? classParameters
+    : (modifiers? 'constructor' NL*)? classParameters
     ;
 
 classParameters
@@ -63,7 +63,7 @@ classParameters
     ;
 
 classParameter
-    : modifierList? ('val' | 'var')? NL* simpleIdentifier ':' NL* type (NL* '=' NL* expression)?
+    : modifiers? ('val' | 'var')? NL* simpleIdentifier ':' NL* type (NL* '=' NL* expression)?
     ;
 
 delegationSpecifiers
@@ -90,11 +90,11 @@ explicitDelegation
     ;
 
 classBody
-    : '{' NL* classMemberDeclarations? NL* '}'
+    : '{' NL* classMemberDeclarations NL* '}'
     ;
 
 classMemberDeclarations
-    : (classMemberDeclaration semis)* classMemberDeclaration semis?
+    : (classMemberDeclaration semis?)*
     ;
 
 classMemberDeclaration
@@ -109,7 +109,7 @@ anonymousInitializer
     ;
 
 secondaryConstructor
-    : modifierList? 'constructor' NL* functionValueParameters (NL* ':' NL* constructorDelegationCall)? NL* block?
+    : modifiers? 'constructor' NL* functionValueParameters (NL* ':' NL* constructorDelegationCall)? NL* block?
     ;
 
 constructorDelegationCall
@@ -118,7 +118,7 @@ constructorDelegationCall
     ;
 
 enumClassBody
-    : '{' NL* enumEntries? (NL* ';' NL* classMemberDeclarations?)? NL* '}'
+    : '{' NL* enumEntries? (NL* ';' NL* classMemberDeclarations)? NL* '}'
     ;
 
 enumEntries
@@ -126,15 +126,12 @@ enumEntries
     ;
 
 enumEntry
-    : (modifierList NL*)? simpleIdentifier (NL* valueArguments)? (NL* classBody)?
+    : (modifiers NL*)? simpleIdentifier (NL* valueArguments)? (NL* classBody)?
     ;
 
 functionDeclaration
-    : modifierList?
-    'fun'
-    (NL* typeParameters)?
-    (NL* receiverType NL* '.')? // ?. here is a disambiguation in cases where tokens '?' and '.' go after each other
-    (NL* simpleIdentifier)
+    : modifiers?
+    'fun' (NL* typeParameters)? (NL* receiverType NL* '.')? NL* simpleIdentifier
     NL* functionValueParameters
     (NL* ':' NL* type)?
     (NL* typeConstraints)?
@@ -146,7 +143,7 @@ functionValueParameters
     ;
 
 functionValueParameter
-    : modifierList? parameter (NL* '=' NL* expression)?
+    : modifiers? parameter (NL* '=' NL* expression)?
     ;
 
 parameter
@@ -163,21 +160,21 @@ functionBody
     ;
 
 objectDeclaration
-    : modifierList? 'object'
+    : modifiers? 'object'
     NL* simpleIdentifier
     (NL* ':' NL* delegationSpecifiers)?
     (NL* classBody)?
     ;
 
 companionObject
-    : modifierList? 'companion' NL* 'object'
+    : modifiers? 'companion' NL* 'object'
     (NL* simpleIdentifier)?
     (NL* ':' NL* delegationSpecifiers)?
     (NL* classBody)?
     ;
 
 propertyDeclaration
-    : modifierList? ('val' | 'var')
+    : modifiers? ('val' | 'var')
     (NL* typeParameters)?
     (NL* receiverType NL* '.')?
     (NL* (multiVariableDeclaration | variableDeclaration))
@@ -204,17 +201,17 @@ propertyDelegate
     ;
 
 getter
-    : modifierList? 'get'
-    | modifierList? 'get' NL* '(' NL* ')' (NL* ':' NL* type)? NL* functionBody
+    : modifiers? 'get'
+    | modifiers? 'get' NL* '(' NL* ')' (NL* ':' NL* type)? NL* functionBody
     ;
 
 setter
-    : modifierList? 'set'
-    | modifierList? 'set' NL* '(' (annotation | parameterModifier)* setterParameter ')' (NL* ':' NL* type)? NL* functionBody
+    : modifiers? 'set'
+    | modifiers? 'set' NL* '(' (annotation | parameterModifier)* setterParameter ')' (NL* ':' NL* type)? NL* functionBody
     ;
 
 typeAlias
-    : modifierList? 'typealias' NL* simpleIdentifier (NL* typeParameters)? NL* '=' NL* type
+    : modifiers? 'typealias' NL* simpleIdentifier (NL* typeParameters)? NL* '=' NL* type
     ;
 
 typeParameters
@@ -236,15 +233,19 @@ typeParameterModifier
     ;
 
 type
-    : typeModifierList?
+    : typeModifiers?
     ( parenthesizedType
     | nullableType
     | typeReference
     | functionType)
     ;
 
-typeModifierList
-    : (annotation | 'suspend' NL*)+
+typeModifiers
+    : typeModifier+
+    ;
+
+typeModifier
+    : annotation | 'suspend' NL*
     ;
 
 parenthesizedType
@@ -265,7 +266,7 @@ functionType
     ;
 
 receiverType
-    : typeModifierList?
+    : typeModifiers?
     ( parenthesizedType
     | nullableType
     | typeReference)
@@ -284,7 +285,6 @@ simpleUserType
     : simpleIdentifier (NL* typeArguments)?
     ;
 
-//parameters for functionType
 functionTypeParameters
     : '(' NL* (parameter | type)? (NL* ',' NL* (parameter | type))* NL* ')'
     ;
@@ -306,7 +306,7 @@ statements
     ;
 
 statement
-    : (labelDefinition | annotation)*
+    : (label | annotation)*
     ( declaration
     | assignment
     | loopStatement
@@ -380,7 +380,7 @@ prefixUnaryExpression
 
 unaryPrefix
     : annotation
-    | labelDefinition
+    | label
     | prefixUnaryOperator NL*
     ;
 
@@ -426,7 +426,7 @@ callSuffix
     ;
 
 annotatedLambda
-    : annotation* labelDefinition? NL* lambdaLiteral
+    : annotation* label? NL* lambdaLiteral
     ;
 
 valueArguments
@@ -706,7 +706,7 @@ memberAccessOperator
     : '.' | safeNav | '::'
     ;
 
-modifierList
+modifiers
     : (annotation | modifier)+
     ;
 
@@ -780,7 +780,7 @@ platformModifier
     | 'actual'
     ;
 
-labelDefinition
+label
     : IdentifierAt NL*
     ;
 

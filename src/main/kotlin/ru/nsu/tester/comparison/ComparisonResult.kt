@@ -21,6 +21,10 @@ data class ComparisonError(
 }
 
 data class ComparisonResult(@Transient val errors: MutableList<ComparisonError>?) : Serializable {
+    companion object {
+        @JvmStatic val serialVersionUID = -4304340037788699086
+    }
+
     @Transient var totalOutput: Int = 0
     @Transient var totalGold: Int = 0
     @Transient var totalErrorWeight: Int = 0
