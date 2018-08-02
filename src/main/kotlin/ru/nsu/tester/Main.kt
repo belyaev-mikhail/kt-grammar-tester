@@ -15,13 +15,15 @@ class Args(parser: ArgParser) {
     val ktCompiler by parser.flagging(help = "Run on kotlin compiler test cases")
     val kotoed by parser.flagging(help = "Run on kotoed project")
     val fuzzer by parser.flagging(help = "Run on fuzzer data")
-    val local by parser.flagging(help = "Run on local directory")
+    val results by parser.storing(help = "Local result file path").default<String?>(null)
+    val dir by parser.storing(help = "Local test directory").default<String?>(null)
 
     val display by parser.flagging(help = "Display differences GUI").default(false)
 
     val cfg by lazy {
         when {
-            local -> Configuration.LOCAL
+            dir != null && results != null -> Configuration.Local(results!!, dir!!)
+            dir != null -> Configuration.Local(projectPath = dir!!)
             kotoed -> Configuration.KOTOED
             fuzzer -> Configuration.FUZZER
             else -> Configuration.KT_COMPILER
@@ -44,7 +46,7 @@ fun main(args: Array<String>) {
             .forEach {
                 println("${it.name}:")
 
-                var result: ParsingResult?
+                val result: ParsingResult?
                 try {
                     result = ParsingOverview.parse(it.inputStream())
                 } catch(ex: Exception) {
