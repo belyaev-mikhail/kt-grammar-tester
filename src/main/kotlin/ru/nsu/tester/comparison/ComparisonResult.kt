@@ -3,6 +3,7 @@ package ru.nsu.tester.comparison
 import ru.nsu.tester.comparison.wrapper.TreeWrapper
 import ru.nsu.util.Configuration
 import java.io.File
+import java.io.Serializable
 
 fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
 
@@ -19,15 +20,15 @@ data class ComparisonError(
     }
 }
 
-data class ComparisonResult(val errors: MutableList<ComparisonError>?) {
-    var totalOutput: Int = 0
-    var totalGold: Int = 0
-    var totalErrorWeight: Int = 0
+data class ComparisonResult(@Transient val errors: MutableList<ComparisonError>?) : Serializable {
+    @Transient var totalOutput: Int = 0
+    @Transient var totalGold: Int = 0
+    @Transient var totalErrorWeight: Int = 0
 
-    private var precision: Double = .0
-    private var recall: Double = .0
-    private var fScore: Double = .0
-    private val accuracy: Int = 3
+    var precision: Double = .0
+    var recall: Double = .0
+    var fScore: Double = .0
+    @Transient private val accuracy: Int = 3
 
     private fun countTotalErrorWeight() {
         if (totalErrorWeight == 0) errors?.forEach { totalErrorWeight += it.weight }
