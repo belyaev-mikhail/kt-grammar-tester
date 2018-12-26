@@ -862,7 +862,7 @@ identifier
     ;
 
 shebangLine
-    : ShebangLine
+    : ShebangLine NL+
     ;
 
 quest
